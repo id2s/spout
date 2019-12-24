@@ -113,6 +113,16 @@ EOD;
         $worksheet->setFilePointer($sheetFilePointer);
 
         \fwrite($sheetFilePointer, self::SHEET_XML_FILE_HEADER);
+
+        //set default column dimension
+        $widthCols='<cols>';
+        for ($i = 0; $i <= 75; $i++) {
+            $colAffect = $i+1;
+            $widthCols.='<col min="'.$colAffect.'" max="'.$colAffect.'" width="23" customWidth="1"/>';
+        }
+        $widthCols.='</cols>';
+        \fwrite($sheetFilePointer, $widthCols);
+
         \fwrite($sheetFilePointer, '<sheetData>');
     }
 
