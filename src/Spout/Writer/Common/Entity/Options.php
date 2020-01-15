@@ -15,6 +15,7 @@ abstract class Options
 
     // Multisheets options
     const TEMP_FOLDER = 'tempFolder';
+    const DEFAULT_WORKBOOK_STYLE = 'defaultWorkbookStyle';
     const DEFAULT_ROW_STYLE = 'defaultRowStyle';
     const SHOULD_CREATE_NEW_SHEETS_AUTOMATICALLY = 'shouldCreateNewSheetsAutomatically';
 

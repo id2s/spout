@@ -85,7 +85,7 @@ abstract class WriterAbstract implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaultRowStyle(Style $defaultStyle)
+    public function setDefaultRowStyle(?Style $defaultStyle)
     {
         $this->optionsManager->setOption(Options::DEFAULT_ROW_STYLE, $defaultStyle);
 

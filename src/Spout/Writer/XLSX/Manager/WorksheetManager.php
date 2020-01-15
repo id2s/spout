@@ -186,23 +186,28 @@ EOD;
      * Then builds and returns xml for the cell.
      *
      * @param Cell  $cell
-     * @param Style $rowStyle
+     * @param Style|null $rowStyle
      * @param int   $rowIndexOneBased
      * @param int   $columnIndexZeroBased
      *
      * @throws InvalidArgumentException If the given value cannot be processed
      * @return string
      */
-    private function applyStyleAndGetCellXML(Cell $cell, Style $rowStyle, $rowIndexOneBased, $columnIndexZeroBased)
+    private function applyStyleAndGetCellXML(Cell $cell, ?Style $rowStyle, $rowIndexOneBased, $columnIndexZeroBased)
     {
         // Apply row and extra styles
-        $mergedCellAndRowStyle = $this->styleMerger->merge($cell->getStyle(), $rowStyle);
-        $cell->setStyle($mergedCellAndRowStyle);
-        $newCellStyle = $this->styleManager->applyExtraStylesIfNeeded($cell);
+        if ($rowStyle !== null) {
+            $mergedCellAndRowStyle = $this->styleMerger->merge($cell->getStyle(), $rowStyle);
+            $cell->setStyle($mergedCellAndRowStyle);
+            $newCellStyle = $this->styleManager->applyExtraStylesIfNeeded($cell);
 
-        $registeredStyle = $this->styleManager->registerStyle($newCellStyle);
+            $registeredStyle = $this->styleManager->registerStyle($newCellStyle);
+            $idStyle = $registeredStyle->getId();
+        } else {
+            $idStyle = null;
+        }
 
-        return $this->getCellXML($rowIndexOneBased, $columnIndexZeroBased, $cell, $registeredStyle->getId());
+        return $this->getCellXML($rowIndexOneBased, $columnIndexZeroBased, $cell, $idStyle);
     }
 
     /**
@@ -211,7 +216,7 @@ EOD;
      * @param int  $rowIndexOneBased
      * @param int  $columnIndexZeroBased
      * @param Cell $cell
-     * @param int  $styleId
+     * @param int|null  $styleId
      *
      * @throws InvalidArgumentException If the given value cannot be processed
      * @return string
@@ -220,19 +225,22 @@ EOD;
     {
         $columnLetters = CellHelper::getColumnLettersFromColumnIndex($columnIndexZeroBased);
         $cellXML = '<c r="' . $columnLetters . $rowIndexOneBased . '"';
-        $cellXML .= ' s="' . $styleId . '"';
 
-        if ($cell->isString()) {
+        if ($styleId !== null) {
+            $cellXML .= ' s="' . $styleId . '"';
+        }
+
+        if ($cell->isError() && is_string($cell->getValueEvenIfError())) {
+            // only writes the error value if it's a string
+            $cellXML .= ' t="e"><v>' . $cell->getValueEvenIfError() . '</v></c>';
+        } elseif ($cell->isString()) {
             $cellXML .= $this->getCellXMLFragmentForNonEmptyString($cell->getValue());
         } elseif ($cell->isBoolean()) {
             $cellXML .= ' t="b"><v>' . (int) ($cell->getValue()) . '</v></c>';
         } elseif ($cell->isNumeric()) {
             $cellXML .= '><v>' . $cell->getValue() . '</v></c>';
-        } elseif ($cell->isError() && is_string($cell->getValueEvenIfError())) {
-            // only writes the error value if it's a string
-            $cellXML .= ' t="e"><v>' . $cell->getValueEvenIfError() . '</v></c>';
         } elseif ($cell->isEmpty()) {
-            if ($this->styleManager->shouldApplyStyleOnEmptyCell($styleId)) {
+            if ($styleId !== null && $this->styleManager->shouldApplyStyleOnEmptyCell($styleId)) {
                 $cellXML .= '/>';
             } else {
                 // don't write empty cells that do no need styling

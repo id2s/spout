@@ -131,7 +131,7 @@ class ManagerFactory implements ManagerFactoryInterface
      */
     private function createStyleRegistry(OptionsManagerInterface $optionsManager)
     {
-        $defaultRowStyle = $optionsManager->getOption(Options::DEFAULT_ROW_STYLE);
+        $defaultRowStyle = $optionsManager->getOption(Options::DEFAULT_WORKBOOK_STYLE);
 
         return new StyleRegistry($defaultRowStyle);
     }

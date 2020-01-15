@@ -88,7 +88,7 @@ class Cell
      */
     public function getValue()
     {
-        return !$this->isError() ? $this->value : null;
+        return $this->value;
     }
 
     /**
@@ -139,23 +139,7 @@ class Cell
      */
     protected function detectType($value)
     {
-        if (CellTypeHelper::isBoolean($value)) {
-            return self::TYPE_BOOLEAN;
-        }
-        if (CellTypeHelper::isEmpty($value)) {
-            return self::TYPE_EMPTY;
-        }
-        if (CellTypeHelper::isNumeric($value)) {
-            return self::TYPE_NUMERIC;
-        }
-        if (CellTypeHelper::isDateTimeOrDateInterval($value)) {
-            return self::TYPE_DATE;
-        }
-        if (CellTypeHelper::isNonEmptyString($value)) {
-            return self::TYPE_STRING;
-        }
-
-        return self::TYPE_ERROR;
+        return CellTypeHelper::getType($value);
     }
 
     /**

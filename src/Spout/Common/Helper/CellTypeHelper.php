@@ -2,12 +2,39 @@
 
 namespace Box\Spout\Common\Helper;
 
+use Box\Spout\Common\Entity\Cell;
+
 /**
  * Class CellTypeHelper
  * This class provides helper functions to determine the type of the cell value
  */
 class CellTypeHelper
 {
+    /**
+     * @param $value
+     * @return string
+     */
+    public static function getType($value)
+    {
+        if ($value === null || $value === '') {
+            return Cell::TYPE_EMPTY;
+        } else {
+            $type = \gettype($value);
+
+            if ($type === 'string') {
+                return Cell::TYPE_STRING;
+            } else if ($type === 'integer' || $type === 'double') {
+                return Cell::TYPE_NUMERIC;
+            } else if ($type === 'boolean') {
+                return Cell::TYPE_BOOLEAN;
+            } else if ($value instanceof \DateTime || $value instanceof \DateInterval) {
+                return Cell::TYPE_DATE;
+            }
+
+            return Cell::TYPE_ERROR;
+        }
+    }
+
     /**
      * @param $value
      * @return bool Whether the given value is considered "empty"

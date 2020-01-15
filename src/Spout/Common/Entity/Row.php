@@ -99,7 +99,7 @@ class Row
     }
 
     /**
-     * @return Style
+     * @return Style|null
      */
     public function getStyle()
     {
@@ -112,7 +112,7 @@ class Row
      */
     public function setStyle($style)
     {
-        $this->style = $style ?: new Style();
+        $this->style = $style;
 
         return $this;
     }

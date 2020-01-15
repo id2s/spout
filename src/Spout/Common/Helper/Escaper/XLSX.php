@@ -44,12 +44,9 @@ class XLSX implements EscaperInterface
     {
         $this->initIfNeeded();
 
-        $escapedString = $this->escapeControlCharacters($string);
         // @NOTE: Using ENT_QUOTES as XML entities ('<', '>', '&') as well as
         //        single/double quotes (for XML attributes) need to be encoded.
-        $escapedString = \htmlspecialchars($escapedString, ENT_QUOTES, 'UTF-8');
-
-        return $escapedString;
+        return \htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
     }
 
     /**
